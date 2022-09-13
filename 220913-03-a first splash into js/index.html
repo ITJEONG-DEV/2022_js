@@ -1,0 +1,104 @@
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+    </head>
+    <body>
+        <h1>Number guessing game</h1>
+        <p>We have selected a random number between 1 and 100. See if<br>
+        you can guess it in 10 turns or fewer. We'll tell you if your guess<br>
+        was too high or too low.<br></p>
+        <p>Enter a guess: <input id="inputText"></input> <button id="guessButton">Submit guess</button></p>
+        <p id="previousGuesses"></p>
+        <p id="resultParagraph" style="color: white;"></p>
+        <p id="hintParagraph"></p>
+        <button id="restartButton">Start new game</button>
+    </body>
+</html>
+
+<script>
+let guessButton = document.getElementById("guessButton");
+let restartButton = document.getElementById("restartButton");
+let inputText = document.getElementById("inputText");
+let resultParagraph = document.getElementById("resultParagraph");
+let hintParagraph = document.getElementById("hintParagraph");
+let previousGuesses = document.getElementById("previousGuesses");
+
+
+const MAX_TURN = 10;
+
+guessButton.onclick = onClickGuess;
+restartButton.onclick = initGame;
+
+let randomNumber;
+let currentTurn;
+
+function onClickGuess() {
+    currentTurn+=1;
+
+    let number = Number(inputText.value);
+    previousGuesses.textContent += " " + number;
+    inputText.value = "";
+
+    if(resultParagraph.hidden === true)
+        resultParagraph.hidden = false;
+
+    if(hintParagraph.hidden === true)
+            hintParagraph.hidden = false;
+
+    if(number == randomNumber) {
+        resultParagraph.textContent = "Congratulations! You got it right!";
+        resultParagraph.style.backgroundColor = "green";
+
+        hintParagraph.hidden = true;
+
+        endGame(true);
+
+    } else {
+        resultParagraph.textContent = "Wrong!";
+        resultParagraph.style.backgroundColor = "red";
+
+        if(number > randomNumber) {
+            hintParagraph.textContent = "Last guess was too high!";
+        } else {
+            hintParagraph.textContent = "Last guess was too low!";
+        }
+
+        if(currentTurn == MAX_TURN)
+            endGame(false);
+    }
+
+    inputText.focus();
+}
+
+function initGame() {
+    guessButton.disabled = false;
+    restartButton.hidden = true;
+    inputText.disabled = false;
+
+    hintParagraph.hidden = true;
+    resultParagraph.hidden = true;
+
+    previousGuesses.textContent = "Previous guesses:";
+
+    randomNumber = Math.floor(Math.random()*100)+1;
+    currentTurn = 0;
+
+    inputText.focus();
+}
+
+function endGame(win) {
+    guessButton.disabled = true;
+    restartButton.hidden = false;
+
+    inputText.disabled = true;
+
+    if(!win) {
+        resultParagraph.textContent = "!!!GAME OVER!!!";
+        hintParagraph.hidden = true;
+    }
+}
+
+initGame();
+
+</script>
