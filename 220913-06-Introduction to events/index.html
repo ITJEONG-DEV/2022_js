@@ -1,0 +1,62 @@
+<html>
+    <body>
+        <button>Abort</button>
+        <br><br>
+        
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+        <div class="tile"></div>
+    </body>
+</html>
+
+<script>
+    const controller = new AbortController();
+    const button = document.querySelector('button');
+    const divs = document.querySelectorAll("div");
+
+    function random(number) {
+        return Math.floor(Math.random()*number+1);
+    }
+    function bgChange() {
+        return 'rgb(' + random(255) + ','+random(255)+','+random(255)+')';
+    }
+
+    
+    for(let i=0; i<divs.length; i++) {
+        divs[i].style.backgroundColor = bgChange();
+        divs[i].onclick = function(e) {
+            e.target.style.backgroundColor = bgChange();
+        }
+    }
+
+    //document.querySelector('html').addEventListener('click', bgChange, {signal: controller.signal});
+    //button.addEventListener('click', function() {
+    //    controller.abort();
+    //});
+
+
+    // element.onclick 은 덮어쓰기
+    // element.addEventListener('event', function) 은 추가
+
+</script>
+
+<style>
+    .tile {
+        height: 100px;
+        width: 25%;
+        float: left;
+    }
+</style>
