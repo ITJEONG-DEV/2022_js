@@ -1,0 +1,79 @@
+<html>
+    <body>
+        <canvas id="canvas"></canvas>
+    </body>
+</html>
+
+<script>
+    const canvas = document.getElementById("canvas");
+    let WIDTH = window.innerWidth;
+    let HEIGHT = window.innerHeight;
+    let LENGTH = 100;
+    let RADIUS = Math.floor(Math.sqrt(WIDTH>HEIGHT?HEIGHT:WIDTH)*2);
+
+    let sizeArray = [];
+
+    window.addEventListener('resize', resize);
+
+    const ctx = canvas.getContext('2d');
+
+    make();
+    resize();
+
+    function random(num) {
+        return Math.floor(Math.random()*num)+1;
+    }
+
+    function make() {
+        for(let i=0; i<LENGTH; i++) {
+            var x = random(WIDTH);
+            var y = random(HEIGHT);
+            var r = random(RADIUS);
+
+            sizeArray.push({
+                "x" : x,
+                "y" : y,
+                "r" : r
+            });
+        }
+    }
+
+    function draw() {
+        for(let i=0; i<LENGTH; i++) {
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(255,0,0,0.5)';
+            ctx.arc(sizeArray[i]["x"], sizeArray[i]["y"], sizeArray[i]["r"], 0, 2*Math.PI);
+            ctx.fill();
+        }
+    }
+
+    function resize() {
+        var oldWidth = WIDTH;
+        var oldHeight = HEIGHT;
+        WIDTH = window.innerWidth;
+        HEIGHT = window.innerHeight;
+
+        var widthRatio = WIDTH/oldWidth;
+        var heightRatio = HEIGHT/oldHeight;
+
+        var ratio = 1;
+        if(widthRatio * heightRatio >= 1) {
+            ratio = widthRatio>heightRatio?widthRatio:heightRatio;
+        } else {
+            ratio = widthRatio<heightRatio?widthRatio:heightRatio;
+        }
+
+        ratio = Math.sqrt(ratio);
+
+        for(let i=0; i<LENGTH; i++) {
+            sizeArray[i]["x"] *= widthRatio;
+            sizeArray[i]["y"] *= heightRatio;
+            sizeArray[i]["r"] *= ratio;
+        }
+        
+        canvas.width = WIDTH;
+        canvas.height = HEIGHT;
+
+        draw();
+    }
+</script>
