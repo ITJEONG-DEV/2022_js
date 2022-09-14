@@ -1,0 +1,121 @@
+<html>
+    <body>
+        <header></header>
+        <section></section>
+    </body>
+</html>
+
+<script>
+    var header = document.querySelector('header');
+    var section = document.querySelector('section');
+
+    var requestURL = 'https://mdn.github.io/learning-area/javascript/oojs/json/superheroes.json';
+
+    var request = new XMLHttpRequest();
+    request.open('GET', requestURL);
+    request.responseType = 'text';
+    // request.responseType = 'json';
+    request.send();
+    request.onload = function() {
+        var superHeroesText = request.response;
+
+        var superHeroes = JSON.parse(superHeroesText);
+        // var str = JSON.stringify(superHeroes);
+
+        // var superHeroes = request.response;
+        populateHeader(superHeroes);
+        showHeroes(superHeroes);
+    }
+
+    function populateHeader(jsonObj) {
+        var h1 = document.createElement('h1');
+        h1.textContent = jsonObj['squadName'];
+        header.appendChild(h1);
+
+        var p = document.createElement('p');
+        p.textContent = 'Hometown: ' + jsonObj['homeTown'] + ' //Formed: ' + jsonObj['formed'];
+        header.appendChild(p);
+    }
+
+    function showHeroes(jsonObj) {
+        var hereos = jsonObj['members'];
+
+        for(var i=0; i<hereos.length; i++) {
+            var article = document.createElement('article');
+            var h2 = document.createElement('h2');
+            var p1 = document.createElement('p');
+            var p2 = document.createElement('p');
+            var p3 = document.createElement('p');
+            var ul = document.createElement('ul');
+
+            h2.textContent = hereos[i].name;
+            p1.textContent = 'Secret identity: ' + hereos[i].secretIdentity;
+            p2.textContent = 'Age: ' + hereos[i].age;
+            p3.textContent = 'Superpowers:';
+
+            var superPowers = hereos[i].powers;
+            for(var j=0; j<superPowers.length; j++) {
+                var li = document.createElement('li');
+                li.textContent = superPowers[j];
+                ul.appendChild(li);
+            }
+
+            article.appendChild(h2);
+            article.appendChild(p1);
+            article.appendChild(p2);
+            article.appendChild(p3);
+            article.appendChild(ul);
+
+            section.appendChild(article);
+        }
+    }
+</script>
+
+<style>
+    html {
+        font-family: 'helvetica neue', helvetica, arial, sans-serif;
+    }
+
+    body {
+        width: 800px;
+        margin: 0 auto;
+    }
+
+    h1, h2 {
+        font-family: 'Faster One', cursive;
+    }
+
+    /* header styles */
+
+    h1 {
+        font-size: 4rem;
+        text-align: center;
+    }
+
+    header p {
+        font-size: 1.3rem;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* section styles */
+
+    section article {
+        width: 33%;
+        float: left;
+    }
+
+    section p {
+        margin: 5px 0;
+    }
+
+    section ul {
+        margin-top: 0;
+    }
+
+    h2 {
+        font-size: 2.5rem;
+        letter-spacing: -5px;
+        margin-bottom: 10px;
+    }
+</style>
