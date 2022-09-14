@@ -1,0 +1,91 @@
+<html>
+
+</html>
+
+<script>
+    function Person(first, last, age, gender, interests) {
+        this.name = {
+            'first':first,
+            'last':last
+        };
+        this.age = age;
+        this.gender = gender;
+        this.interests = interests;
+        this.bio = function() {
+            var string = this.name.first + ' ' + this.name.last + ' is ' + this.age + ' years old.';
+
+            var pronoun;
+
+            if(this.gender === 'male' || this.gender === 'Male' || this.gender === 'm' || this.gender === 'M') {
+                pronoun = 'He likes ';
+            } else if(this.gender === 'female' || this.gender === 'Female' || this.gender === 'f' || this.gender === 'F') {
+                pronoun = 'She likes ';
+            } else {
+                pronoun = 'They like ';
+            }
+
+            string += pronoun;
+
+            if(this.interest.length === 1) {
+                string += this.interests[0] + ".";
+            } else if(this.interests.length === 2) {
+                string += this.interests[0] + " and " + this.interests[1] + ".";
+            } else {
+                for(let i=0; i<this.interests.length; i++) {
+                    if(i===this.interests.length - 1) {
+                        string += 'and ' + this.interests[i] + ".";
+                    } else {
+                        string += this.interests[i] + ', ';
+                    }
+                }
+            }
+
+            alert(string);
+        };
+
+        this.greeting = function() { 
+            alert('Hi! I\'m ' + this.name.first + '.');
+        };
+    };
+
+    let person1 = new Person('Tammi', 'Smith', 32, 'neutral', ['music', 'skiing', 'kickboxing']);
+
+    // 호출된 객체의 값을 단순 반환함
+    console.log(person1.valueOf());
+
+    // 상속 받은 속성과 메소드들은 prototype에 정의되어 있음 (sub-namespace)
+    console.log(Person.prototype);
+    console.log(Object.prototype);
+    console.log(String.prototype);
+
+    // 새 인스턴스 생성 - Object.create() method
+    let person2 = Object.create(person1);
+
+    // person2는 person1을 프로토타입 객체로 삼음
+    console.log(person2.__proto__);
+
+    // 둘 모두 Person()의 생성자 함수를 반환함
+    console.log(person1.constructor);
+    console.log(person2.constructor);
+
+    // 실행 도중 명시적인 생성사 함수를 예측할 수 없는 상황에서 인스턴스를 생성해야 하는 경우 유용하게 사용 가능함
+    var person3 = new person1.constructor('Karen', 'Stephenson', 26, 'female', ['playing drums', 'mountain climbing']);
+    
+    // 인스턴스의 생성자 이름 알아내기
+    console.log(person1.constructor.name);
+
+    // 생성자의 prototype 속성을 수정
+    // 프로토타입에 메소드를 추가하면 해당 생성자로 생성된 모든 객체에서 사용이 가능함
+    Person.prototype.farewell = function() {
+        console.log(this.name.first + ' has left the building. Bye for now!');
+    }
+    person1.farewell();
+
+    // 프로토토압에 상수를 정의하는 것은 가능하나, 일반적으로 생성자에서 정의하는 것이 좋음
+    Person.prototype.fullName = 'Bob Smith';
+    console.log(person1.fullName);
+
+    // this는 함수 범위가 아닌 전역 범위를 가르키므로 코드가 의도대로 동작하지 않음
+    Person.prototype.fullName = this.name.first + ' ' + this.name.last;
+    console.log(person1.fullName);
+</script>
