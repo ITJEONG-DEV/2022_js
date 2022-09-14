@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Object-oriented JavaScript inheritance</title>
+    </head>
+    <body>
+        <div>
+            <label for="jscode">Enter code:</label>
+            <input type="text" id="jscode">
+            <button>Submit code</button>
+        </div>
+        <p></p>
+    </body>
+</html>
+
+<script>
+    const input = document.querySelector('input');
+    const btn = document.querySelector('button');
+    const para = document.querySelector('p');
+    btn.onclick = function() {
+        const code = input.value;
+        para.textContent = eval(code);
+    }
+
+    class Person {
+        // 생성자
+        constructor(first, last, age, gender, interests) {
+            this.name = {
+                first,
+                last
+            };
+            this.age = age;
+            this.gender = gender;
+            this.interests = interests;
+        };
+
+        // 멤버 메소드
+        greeting() {
+            console.log('Hi! I\'m ' + this.name.first + '.');
+        };
+
+        farewell() {
+            console.log(this.name.first + ' has left the building. Bye for now!');
+        };
+    }
+
+    // new 연산자로 객체 인스턴스 생성
+    let han = new Person('Han', 'Solo', 25, 'male', ['Smuggling']);
+    let leia = new Person('Leia', 'Organa', 19, 'female' ['Government']);
+
+    // class 문법으로 상속
+    class Teacher extends Person {
+        constructor(first, last, age, gender, interests, subject, grade) {
+            // super() 연산자를 사용
+            super(first, last, age, gender, interests);
+
+            this.subject = subject;
+            this.grade = grade;
+        }
+
+        // getter
+        get subject() {
+            return this._subject;
+        }
+
+        // setter
+        set subject(newSubject) {
+            this._subject = newSubject;
+        }
+
+        greeting() {
+            var prefix;
+
+            if (this.gender === 'male' || this.gender === 'Male' || this.gender === 'm' || this.gender === 'M') {
+                prefix = 'Mr.';
+            } else if (this.gender === 'female' || this.gender === 'Female' || this.gender === 'f' || this.gender === 'F') {
+                prefix = 'Mrs.';
+            } else {
+                prefix = 'Mx.';
+            }
+            console.log('Hello. My name is ' + prefix + ' ' + this.name.last + ', and I teach ' + this.subject + '.');
+        }
+    }
+
+    let snape = new Teacher('Severus', 'Snape', 58, 'male', ['Potions'], 'Dark arts', 5);
+
+    console.log(snape._subject);
+    snape._subject = "Balloon animals";
+    console.log(snape._subject);
+</script>
