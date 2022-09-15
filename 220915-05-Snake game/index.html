@@ -23,6 +23,7 @@
     const HEIGHT = canvas.height = window.innerHeight;
 
     const TERM = 500;
+    const GAMMA = 0.97;
     const UNIT = 30;
 
     const UNIT_WIDTH = Math.floor(WIDTH/UNIT/2)-1;
@@ -30,6 +31,9 @@
     const UNIT_LENGTH = UNIT_WIDTH>UNIT_HEIGHT?UNIT_HEIGHT:UNIT_WIDTH;
     
     let scoreNum = 0;
+    let totalScore = 0;
+    let currentTerm = TERM;
+    let timeoutId;
 
     // vector2(x, y) object
     class Vector2 {
@@ -225,6 +229,7 @@
                 this.addLength();
 
                 item.moveItem();
+                currentTerm = Math.floor(currentTerm*GAMMA);
                 scoreNum++;
                 renewText();
             }
@@ -266,7 +271,10 @@
 
     function init() {
         scoreNum = 0;
+        totalScore = 0;
         renewText();
+
+        currentTerm = TERM;
 
         item.moveItem();
     }
@@ -298,10 +306,13 @@
     function loop() {
         snake.move();
         draw();
+
+        timeoutId = setTimeout(loop, currentTerm);
     }
 
     function renewText() {
-        score.textContent = "score: " + scoreNum;
+        totalScore += scoreNum*10;
+        score.textContent = "score: " + totalScore;
     }
 
     function restart() {
@@ -316,7 +327,8 @@
 
     init();
     draw();
-    setInterval(loop, TERM);
+    timeoutId = setTimeout(loop, currentTerm);
+    // setInterval(loop, TERM);
 </script>
 
 <style>
