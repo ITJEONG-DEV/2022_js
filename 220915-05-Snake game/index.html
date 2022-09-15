@@ -31,6 +31,7 @@
     
     let scoreNum = 0;
 
+    // vector2(x, y) object
     class Vector2 {
         constructor(x, y) {
             this.x = x;
@@ -60,6 +61,7 @@
     };
     Object.freeze(DIRECTION);
 
+    // static class
     class Grid {
         static defaultX = WIDTH/2;
         static defaultY = HEIGHT/2;
@@ -68,6 +70,7 @@
         }
     }
 
+    // queue for snake paths
     class Queue {
         constructor() {
             this.length = 1;
@@ -114,8 +117,18 @@
 
             return false;
         }
+
+        isInItWithoutHead() {
+            for(let i=1; i<this.arr.length; i++) {
+                if(this.arr[i].compare(this.arr[0]))
+                    return true;
+            }
+
+            return false;
+        }
     }
 
+    // square for drawing
     class Square extends Vector2{
         constructor(x, y) {
             super(x, y);
@@ -131,6 +144,7 @@
         }
     }
 
+    // snake
     class Snake {
         constructor() {
             this.init();
@@ -185,8 +199,19 @@
             }
         }
 
-        isInBody(v) {
+        itemInBody(v) {
             return this.path.isInIt(v);
+        }
+
+        checkHeadInValidArea(v) {
+            if(v.x < UNIT_LENGTH*-1 || v.x >= UNIT_LENGTH || v.y < UNIT_LENGTH*-1 || v.y >= UNIT_LENGTH)
+                return true;
+            
+            return false;
+        }
+
+        checkHeadCollideWithBody() {
+            return this.path.isInItWithoutHead();
         }
 
         move() {
@@ -204,8 +229,7 @@
                 renewText();
             }
 
-            if(newPos.x < UNIT_LENGTH*-1 || newPos.x >= UNIT_LENGTH ||
-                newPos.y < UNIT_LENGTH*-1 || newPos.y >= UNIT_LENGTH) {
+            if(this.checkHeadInValidArea(newPos) || this.checkHeadCollideWithBody()) {
                     this.active = false;
                     gameOver();
             } else {
@@ -214,6 +238,7 @@
         }
     }
 
+    // item
     class Item extends Square {
         constructor(x, y) {
             super(x, y);
@@ -229,7 +254,7 @@
             this.x = Math.floor(Math.random()*((UNIT_LENGTH-1)*2))-(UNIT_LENGTH-1);
             this.y = Math.floor(Math.random()*((UNIT_LENGTH-1)*2))-(UNIT_LENGTH-1);
 
-            if(snake.isInBody(this))
+            if(snake.itemInBody(this))
                 this.moveItem();
         }
     }
