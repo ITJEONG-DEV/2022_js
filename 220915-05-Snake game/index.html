@@ -2,11 +2,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
-        <title>Bouncing balls</title>
+        <title>Snake game</title>
     </head>
     <body>
         
-        <h1>Snake game <button id="restart">restart</button> </h1>
+        <h1>Snake game  <button id="restart">restart</button> </h1>
         <p id="score"></p>
         <canvas></canvas>
     </body>
@@ -179,6 +179,8 @@
                 var v = this.path.get(i);
 
                 const square = new Square(v.x, v.y);
+                if(!this.active)
+                    square.color = "#888888";
                 square.draw();
             }
         }
@@ -205,6 +207,7 @@
             if(newPos.x < UNIT_LENGTH*-1 || newPos.x >= UNIT_LENGTH ||
                 newPos.y < UNIT_LENGTH*-1 || newPos.y >= UNIT_LENGTH) {
                     this.active = false;
+                    gameOver();
             } else {
                 this.path.addItem(newPos);
             }
@@ -279,6 +282,11 @@
     function restart() {
         snake.init();
         init();
+    }
+
+    function gameOver() {
+        clearInterval(loop);
+        draw();
     }
 
     init();
