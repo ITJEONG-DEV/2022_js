@@ -1,0 +1,323 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>Bouncing balls</title>
+    </head>
+    <body>
+        
+        <h1>Snake game <button id="restart">restart</button> </h1>
+        <p id="score"></p>
+        <canvas></canvas>
+    </body>
+</html>
+
+<script>
+    const restartBtn = document.querySelector('#restart');
+    const score = document.querySelector('#score');
+
+    const canvas = document.querySelector('canvas')
+    const ctx = canvas.getContext('2d');
+
+    const WIDTH = canvas.width = window.innerWidth;
+    const HEIGHT = canvas.height = window.innerHeight;
+
+    const TERM = 500;
+    const UNIT = 30;
+
+    const UNIT_WIDTH = Math.floor(WIDTH/UNIT/2)-1;
+    const UNIT_HEIGHT = Math.floor(HEIGHT/UNIT/2)-1;
+    const UNIT_LENGTH = UNIT_WIDTH>UNIT_HEIGHT?UNIT_HEIGHT:UNIT_WIDTH;
+    
+    let scoreNum = 0;
+
+    class Vector2 {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        add(v) {
+            return new Vector2(this.x+v.x, this.y+v.y);
+        }
+
+        compare(v) {
+            if(this.x === v.x && this.y === v.y)
+                return true;
+            return false;
+        }
+
+        toString() {
+            return "(" + this.x + ", " + this.y + ")";
+        }
+    }
+
+    const DIRECTION = {
+        UP: new Vector2(0, -1),
+        DOWN: new Vector2(0, 1),
+        LEFT: new Vector2(-1, 0),
+        RIGHT: new Vector2(1, 0)
+    };
+    Object.freeze(DIRECTION);
+
+    class Grid {
+        static defaultX = WIDTH/2;
+        static defaultY = HEIGHT/2;
+        static GridToPos(x, y) {
+            return new Vector2(this.defaultX+x*UNIT, this.defaultY+y*UNIT);
+        }
+    }
+
+    class Queue {
+        constructor() {
+            this.length = 1;
+            this.arr = [];
+        }
+
+        addItem(v) {
+            this.arr.unshift(v);
+
+            if(this.arr.length > this.length+1)
+                this.arr.pop();
+        }
+
+        addLength() {
+            this.length++;
+        }
+
+        get(i) {
+            return this.arr[i];
+        }
+
+        getLast() {
+            if(this.arr.length > 0) {
+                return this.arr[this.arr.length-1];
+            }
+            return null;
+        }
+
+        toString() {
+            var str = "";
+
+            for(let i=0; i<this.arr.length; i++) {
+                str+= this.arr[i].toString() + " ";
+            }
+
+            return str;
+        }
+
+        isInIt(v) {
+            for(let i=0; i<this.arr.length; i++) {
+                if(this.arr[i].compare(v))
+                    return true;
+            }
+
+            return false;
+        }
+    }
+
+    class Square extends Vector2{
+        constructor(x, y) {
+            super(x, y);
+
+            this.color = '#ff0000';
+        }
+
+        draw() {
+            var center = Grid.GridToPos(this.x, this.y);
+            ctx.beginPath();
+            ctx.fillStyle = this.color;
+            ctx.fillRect(center.x, center.y, UNIT-2, UNIT-2);
+        }
+    }
+
+    class Snake {
+        constructor() {
+            this.init();
+            window.addEventListener('keydown', (e)=>this.changeDirection(e));
+        }
+
+        init() {
+            this.length = 1;
+
+            this.direction = DIRECTION.UP;
+
+            this.path = new Queue();
+            this.path.addItem(new Vector2(0, 0));
+
+            this.active = true;
+        }
+
+        addLength() {
+            this.length++;
+            this.path.addLength();
+        }
+
+        changeDirection(e) {
+            switch(e.key) {
+                    case 'a':
+                    case 'ArrowLeft':
+                        this.direction = DIRECTION["LEFT"];
+                        break;
+                    case 'd':
+                    case 'ArrowRight':
+                        this.direction = DIRECTION["RIGHT"];
+                        break;
+                    case 'w':
+                    case 'ArrowUp':
+                        this.direction = DIRECTION["UP"];
+                        break;
+                    case 's':
+                    case 'ArrowDown':
+                        this.direction = DIRECTION["DOWN"];
+                        break;
+                }
+        }
+
+        draw() {
+            for(let i=0; i<this.length; i++) {
+                var v = this.path.get(i);
+
+                const square = new Square(v.x, v.y);
+                square.draw();
+            }
+        }
+
+        isInBody(v) {
+            return this.path.isInIt(v);
+        }
+
+        move() {
+            if(!this.active)
+                return;
+
+            var current = this.path.get(0);
+            var newPos = current.add(this.direction);
+
+            if(newPos.compare(item)) {
+                this.addLength();
+
+                item.moveItem();
+                scoreNum++;
+                renewText();
+            }
+
+            if(newPos.x < UNIT_LENGTH*-1 || newPos.x >= UNIT_LENGTH ||
+                newPos.y < UNIT_LENGTH*-1 || newPos.y >= UNIT_LENGTH) {
+                    this.active = false;
+            } else {
+                this.path.addItem(newPos);
+            }
+        }
+    }
+
+    class Item extends Square {
+        constructor(x, y) {
+            super(x, y);
+
+            this.color = '#fff200';
+        }
+
+        init() {
+            this.moveItem();
+        }
+
+        moveItem() {
+            this.x = Math.floor(Math.random()*((UNIT_LENGTH-1)*2))-(UNIT_LENGTH-1);
+            this.y = Math.floor(Math.random()*((UNIT_LENGTH-1)*2))-(UNIT_LENGTH-1);
+
+            if(snake.isInBody(this))
+                this.moveItem();
+        }
+    }
+
+    const snake = new Snake();
+    const item = new Item();
+
+    restartBtn.addEventListener('click', restart);
+
+    function init() {
+        scoreNum = 0;
+        renewText();
+
+        item.moveItem();
+    }
+
+    function clear() {
+        snake.init();
+        item.init();
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, WIDTH, HEIGHT);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+        ctx.fillStyle = '#232323';
+        for(let i=UNIT_LENGTH*-1; i<=UNIT_LENGTH; i++) {
+            var pos = Grid.GridToPos(i, UNIT_LENGTH*-1);
+            ctx.fillRect(pos.x-2, pos.y-2, 2, UNIT_LENGTH*UNIT*2);
+        }
+        for(let i=UNIT_LENGTH*-1; i<=UNIT_LENGTH; i++) {
+            var pos = Grid.GridToPos(UNIT_LENGTH*-1, i);
+            ctx.fillRect(pos.x-2, pos.y-2, UNIT_LENGTH*UNIT*2, 2);
+        }
+
+        item.draw();
+        snake.draw();
+    }
+
+    function loop() {
+        snake.move();
+        draw();
+    }
+
+    function renewText() {
+        score.textContent = "score: " + scoreNum;
+    }
+
+    function restart() {
+        snake.init();
+        init();
+    }
+
+    init();
+    draw();
+    setInterval(loop, TERM);
+</script>
+
+<style>
+    html, body {
+        margin: 0;
+    }
+
+    html {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        height: 100%;
+    }
+
+    body {
+        overflow: hidden;
+        height: inherit;
+    }
+
+    h1 {
+        font-size: 2rem;
+        letter-spacing: -1px;
+        position: absolute;
+        margin: 0;
+        top: -4px;
+        right: 5px;
+
+        color: transparent;
+        text-shadow: 0 0 4px white;
+    }
+
+    p {
+        position: absolute;
+        margin: 0;
+        top: 35px;
+        right: 5px;
+        color: #aaa;
+    }
+</style>
