@@ -1,0 +1,82 @@
+<html>
+    <body>
+        <p>This is my page</p>
+    </body>
+</html>
+
+<script>
+    // let promise = fetch('coffee.jpg');
+    // let promise2 = promise.then(response => response.blob());
+    // let primise3 = promise2.then(myBlob => {
+    //     let objectURL = URL.createObjectURL(myBlob);
+    //     let image = document.createElement('img');
+    //     image.src = objectURL;
+    //     image.width = 500;
+    //     image.height = 300;
+    //     document.body.appendChild(image);
+    // })
+    // let errorCase = primise3.catch(e=> {
+    //     console.log('There has been a promise with your fetch operation: ' + e.message);
+    // })
+
+    // fetch('coffee.jpg')
+    //     .then(reponse => reponse.blob())
+    //     .then(myBlob => {
+    //         let objectURL = URL.createObjectURL(myBlob);
+    //         let image = document.createElement('img');
+    //         image.src = objectURL;
+    //         image.width = 500;
+    //         image.height = 300;
+    //         document.body.appendChild(image);
+    //     })
+    //     .catch(e=>{
+    //         console.log('There has been a problem with your fetch operation: ' + e.message);
+    //     });
+
+    
+    function fetchAndDecode(url, type) {
+        return fetch(url)
+            .then(response => {
+                if(type === 'blob') {
+                    return response.blob();
+                } else if(type === 'text') {
+                    return response.text();
+                }
+            })
+            .catch(e => {
+                console.log('There has been a problem with your fetch operation: ' + e.message);
+            })
+            .finally(() => {
+                console.log('fetch attempt for "${url}" finished.')
+            });
+    }
+
+    let coffee = fetchAndDecode('coffee.jpg', 'blob');
+    let tea = fetchAndDecode('tea.jpg', 'blob');
+    let description = fetchAndDecode('description.txt', 'text');
+
+    Promise.all([coffee, tea, description]).then(values => {
+        console.log(values);
+
+        let objectURL1 = URL.createObjectURL(values[0]);
+        let objectURL2 = URL.createObjectURL(values[1]);
+        let descText = values[2];
+
+        let image1 = document.createElement('img');
+        image1.src = objectURL1;
+        image1.width = 500;
+        image1.height = 300;
+        document.body.appendChild(image1);
+
+        let image2 = document.createElement('img');
+        image2.src = objectURL2;
+        image2.width = 500;
+        image2.height = 300;
+        document.body.appendChild(image2);
+        
+        let para = document.createElement('p');
+        para.textContent = descText;
+        document.body.appendChild(para);
+    })
+
+</script>
