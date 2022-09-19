@@ -307,7 +307,11 @@
         snake.move();
         draw();
 
-        timeoutId = setTimeout(loop, currentTerm);
+        if(!snake.active) {
+            clearTimeout(timeoutId);
+        } else {
+            timeoutId = setTimeout(loop, currentTerm);
+        }
     }
 
     function renewText() {
@@ -318,10 +322,11 @@
     function restart() {
         snake.init();
         init();
+        timeoutId = setTimeout(loop, currentTerm);
     }
 
     function gameOver() {
-        clearInterval(loop);
+        // clearInterval(loop);
         draw();
     }
 
